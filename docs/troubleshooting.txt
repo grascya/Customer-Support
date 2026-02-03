@@ -1,0 +1,16 @@
+1. Product Overview
+The Lumino Hub is a centralized smart home controller. It connects via Wi-Fi (2.4GHz and 5GHz) and supports Zigbee and Z-Wave protocols. The device features a physical "Privacy Toggle" on the back that manually disconnects the microphone.
+
+2. Troubleshooting Connection Issues
+Red Blinking Light: This indicates a Wi-Fi authentication error. Ensure the password is correct and the router is within 10 meters.
+Solid Orange Light: The Hub is performing a firmware update. Do not unplug the device.
+Factory Reset: To reset, hold the "Sync" button for 15 seconds while plugging the power cable in. This will erase all paired devices.
+
+3. Shipping and Refund Policies
+Returns: We offer a 30-day money-back guarantee. The item must be in its original packaging.
+Shipping: Standard shipping takes 3-5 business days. Express shipping (1-2 days) is available for an additional $15.
+Warranty: All Lumino devices include a 1-year limited warranty covering manufacturing defects. It does not cover water damage or drops.
+
+4. Privacy and Security
+Data Storage: User voice recordings are encrypted locally and deleted after 24 hours.
+Remote Access: To enable remote control, users must activate "Cloud Bridge" in the Lumino App settings under the Security tab.

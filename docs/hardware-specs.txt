@@ -1,0 +1,11 @@
+8. Technical Specifications
+Processor: Quad-core 1.5GHz ARM Cortex.
+RAM: 2GB LPDDR4.
+Storage: 8GB onboard eMMC (for local event logging).
+Power: 12V/2A DC input via USB-C.
+
+9. Environmental Limits
+The Lumino Hub is designed for indoor use only. Operating temperature range is 0°C to 40°C. It is not IP-rated for moisture resistance.
+
+10. Physical Maintenance
+Clean the outer shell with a dry microfiber cloth. Do not use chemical solvents or compressed air near the microphone array located on the top ring.

@@ -1,0 +1,12 @@
+5. Advanced Automation Engine
+The Lumino Hub uses "Logic Flows" to create automations. Users can set "Triggers" (e.g., Motion Detected) and "Actions" (e.g., Turn on Lights).
+
+6. Third-Party Integrations
+Apple HomeKit: Scan the QR code located on the bottom of the hub to bridge Lumino-exclusive devices.
+Google Home/Alexa: Requires the "Lumino Skill" to be enabled within the respective third-party apps.
+IFTTT: Lumino supports Webhooks for advanced users to trigger external API calls.
+
+7. Voice Command Library
+The wake word is "Hey Lumino." High-priority commands include:
+"Hey Lumino, Lockdown" (Locks all smart deadbolts and arms the alarm).
+"Hey Lumino, Goodnight" (Executes a user-defined sleep scene).

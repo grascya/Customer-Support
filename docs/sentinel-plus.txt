@@ -1,0 +1,8 @@
+11. Lumino Sentinel Plus
+While basic features are free, "Sentinel Plus" ($4.99/mo) provides:
+Extended Storage: 30 days of encrypted cloud video storage for Lumino Cameras.
+AI Detection: Distinguishes between people, pets, and packages.
+Cellular Backup: Keeps the hub online during Wi-Fi outages using the built-in LTE chip (North America only).
+
+12. Billing and Account Management
+Subscriptions are managed via the Lumino Web Portal. Cancellations take effect at the end of the current billing cycle. No partial refunds are provided for mid-month cancellations.

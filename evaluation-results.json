@@ -1,0 +1,232 @@
+[
+  {
+    "testCaseId": "test_001",
+    "question": "What is the warranty period for Lumino devices?",
+    "botAnswer": "All Lumino devices come with a 1-year limited warranty that covers manufacturing defects. Please note that the warranty does not cover water damage or drops.",
+    "retrievedSources": [
+      "troubleshooting.txt",
+      "sentinel-plus.txt",
+      "troubleshooting.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 3.7,
+      "responseTime": 13178,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_002",
+    "question": "How much does Sentinel Plus cost?",
+    "botAnswer": "Sentinel Plus costs $4.99 per month and includes extended cloud storage (30 days), AI detection features for people/pets/packages, and cellular backup in North America. The subscription is managed through the Lumino Web Portal.",
+    "retrievedSources": [
+      "sentinel-plus.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 3.7,
+      "responseTime": 7659,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_003",
+    "question": "What processor does the Lumino Hub use?",
+    "botAnswer": "The Lumino Hub uses a Quad-core 1.5GHz ARM Cortex processor.",
+    "retrievedSources": [
+      "technical-setup.txt",
+      "hardware-specs.txt",
+      "troubleshooting.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 3,
+      "responseTime": 5682,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_004",
+    "question": "What is the wake word for voice commands?",
+    "botAnswer": "The wake word for Lumino voice commands is \"Hey Lumino\". This can be used to trigger commands like \"Lockdown\" for security or \"Goodnight\" to activate sleep scenes.",
+    "retrievedSources": [
+      "technical-setup.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 5,
+      "responseTime": 5717,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_005",
+    "question": "What features do I get with Sentinel Plus and how do I cancel it?",
+    "botAnswer": "Sentinel Plus ($4.99/month) includes three main features:\n1. Extended Storage - 30 days of encrypted cloud video storage for your Lumino cameras\n2. AI Detection - Smart identification of people, pets, and packages\n3. Cellular Backup - LTE backup during Wi-Fi outages (North America only)\n\nTo cancel your subscription:\n1. Go to the Lumino Web Portal\n2. Navigate to subscription management\n3. Process your cancellation\n\nNote that your subscription will remain active until the end of your current billing cycle. Lumino does not provide partial refunds for mid-month cancellations.",
+    "retrievedSources": [
+      "sentinel-plus.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 3.9,
+      "responseTime": 6968,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_006",
+    "question": "How do I reset my hub and what does that erase?",
+    "botAnswer": "To reset your Lumino Hub:\n\n1. Hold down the \"Sync\" button\n2. While holding, plug in the power cable\n3. Continue holding for 15 seconds\n\nPlease note that performing a factory reset will erase all paired devices from your Hub. Make sure to back up any critical automation settings before proceeding with the reset.",
+    "retrievedSources": [
+      "troubleshooting.txt",
+      "technical-setup.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 4.3,
+      "responseTime": 7353,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_007",
+    "question": "What integrations does the hub support and how do I set up HomeKit?",
+    "botAnswer": "The Lumino Hub supports Apple HomeKit, Google Home, Alexa, and IFTTT integrations.\n\nFor HomeKit setup:\n1. Locate the QR code on the bottom of your Lumino Hub\n2. Scan this code to bridge your Lumino devices with HomeKit\n\nFor other platforms:\n- Google Home/Alexa: Enable the \"Lumino Skill\" in your Google Home or Alexa app\n- IFTTT: Use Webhooks functionality for API integrations",
+    "retrievedSources": [
+      "technical-setup.txt",
+      "troubleshooting.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 5,
+      "responseTime": 9637,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_008",
+    "question": "What are the temperature limits and is it waterproof?",
+    "botAnswer": "The Lumino Hub is designed for indoor use only and operates safely between 0°C to 40°C. The device is not waterproof as it does not have an IP moisture resistance rating. Keep the device in a dry, indoor environment within these temperature limits for optimal performance.",
+    "retrievedSources": [
+      "hardware-specs.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 3.4,
+      "responseTime": 6417,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_009",
+    "question": "I want all the premium features but my hub disconnects sometimes. What should I do?",
+    "botAnswer": "I recommend subscribing to Sentinel Plus for $4.99/month, which includes cellular backup to keep your hub online during Wi-Fi outages (available in North America). This premium service also gives you:\n- 30 days of encrypted cloud video storage\n- AI detection for people, pets, and packages\n\nFor the disconnection issues, check that:\n1. Your router is within 10 meters of the hub\n2. Your Wi-Fi password is entered correctly (if you see a red blinking light)\n\nIf problems persist, try a factory reset by holding the \"Sync\" button for 15 seconds while plugging in the power cable. Note that this will erase all paired devices.",
+    "retrievedSources": [
+      "troubleshooting.txt",
+      "sentinel-plus.txt",
+      "technical-setup.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 4.1,
+      "responseTime": 11879,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_010",
+    "question": "Can I return the hub if I don't like it, and what's not covered by warranty?",
+    "botAnswer": "Yes, Lumino offers a 30-day money-back guarantee for returns, but the hub must be in its original packaging.\n\nRegarding warranty coverage: The hub comes with a 1-year limited warranty that covers manufacturing defects. However, the warranty specifically does not cover:\n1. Water damage\n2. Drop damage",
+    "retrievedSources": [
+      "troubleshooting.txt",
+      "troubleshooting.txt",
+      "hardware-specs.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 4,
+      "responseTime": 7084,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_011",
+    "question": "How do I keep my privacy secure while using voice commands?",
+    "botAnswer": "Lumino takes your privacy seriously with built-in security features. Your voice recordings are automatically encrypted locally on the device and are permanently deleted after 24 hours. If you want to use remote control features, you'll need to explicitly enable this by activating \"Cloud Bridge\" in the Lumino App's Security tab settings. This gives you full control over your privacy preferences while still maintaining convenient voice command functionality.",
+    "retrievedSources": [
+      "troubleshooting.txt",
+      "technical-setup.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 3.6,
+      "responseTime": 7818,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_012",
+    "question": "Is it good?",
+    "botAnswer": "I need more specific information about which Lumino product you're asking about. As your Lumino Technical Assistant, I can help you with any of our smart home products, including lights, switches, sensors, and hubs. What particular Lumino device would you like to learn more about?",
+    "retrievedSources": [],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 5,
+      "responseTime": 6435,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_013",
+    "question": "What about the thing?",
+    "botAnswer": "I don't have specific documentation about \"the thing\" in my Lumino product knowledge base. Could you please clarify what Lumino product or feature you're asking about? I'm happy to help with any questions about Lumino smart home devices, their setup, features, or troubleshooting.",
+    "retrievedSources": [],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 5,
+      "responseTime": 8369,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_014",
+    "question": "What's the weather like today?",
+    "botAnswer": "I'm a Lumino smart home technical assistant, so I don't have access to weather information. I'd be happy to help you with any questions about Lumino smart home products, device setup, troubleshooting, or home automation features. What would you like to know about your Lumino system?",
+    "retrievedSources": [],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 5,
+      "responseTime": 9398,
+      "relevance": 1
+    },
+    "passed": true
+  },
+  {
+    "testCaseId": "test_015",
+    "question": "Can you help me with my WiFi router settings?",
+    "botAnswer": " Lumino Hub is compatible with both 2.4GHz and 5GHz Wi-Fi networks. For optimal performance, ensure your router is positioned within 10 meters of the Hub. If you're seeing a red blinking light, this specifically indicates a Wi-Fi authentication error - double-check that you're entering the correct network password.",
+    "retrievedSources": [
+      "troubleshooting.txt"
+    ],
+    "metrics": {
+      "retrievalAccuracy": 1,
+      "answerQuality": 5,
+      "responseTime": 7150,
+      "relevance": 1
+    },
+    "passed": true
+  }
+]
