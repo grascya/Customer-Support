@@ -1,5 +1,7 @@
 // app/api/chat/route.ts
 
+{/*
+
 import { NextRequest, NextResponse } from 'next/server';
 import { openai } from '@/lib/openrouter/client';
 import { retrieveRelevantDocs, formatContextForPrompt } from '@/lib/utils/rag';
@@ -7,7 +9,7 @@ import {
   getOrCreateConversation,
   saveMessage,
   getConversationHistory,
-} from '@/lib/utils/conversation';
+} from '@/lib/utils/escalation';
 import { trackEvent, updateConversationMetrics } from '@/lib/utils/analytics';
 import { SYSTEM_PROMPT, RAG_PROMPT } from '@/lib/constants/prompts';
 
@@ -119,3 +121,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+*/}
