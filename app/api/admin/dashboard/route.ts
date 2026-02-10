@@ -23,10 +23,13 @@ export async function GET() {
       .eq('status', 'resolved');
 
     // Get escalated conversations
-    const { count: escalatedConversations } = await supabaseAdmin
-      .from('conversations')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'escalated');
+const { data: escalatedData, count: escalatedConversations } = await supabaseAdmin
+  .from('conversations')
+  .select('*', { count: 'exact' })
+  .eq('status', 'escalated');
+
+console.log('🚨 Escalated conversations:', escalatedConversations);
+console.log('🚨 Sample escalated:', escalatedData?.[0]);
 
     // Get average response time
     const { data: analyticsData } = await supabaseAdmin
@@ -39,7 +42,7 @@ export async function GET() {
       ? analyticsData.reduce((acc, row) => acc + (row.event_data.response_time_ms || 0), 0) / analyticsData.length
       : 0;
 
-    // FIXED: Get sentiment distribution from conversations table (not messages)
+    // Get sentiment distribution from conversations table (not messages)
     const { data: sentimentData } = await supabaseAdmin
       .from('conversations')
       .select('sentiment')
@@ -69,7 +72,7 @@ export async function GET() {
     const thumbsUp = feedbackData?.filter(f => f.rating === 1).length || 0;
     const thumbsDown = feedbackData?.filter(f => f.rating === -1).length || 0;
 
-    // FIXED: Get recent conversations with proper message count and last message
+    // Get recent conversations with proper message count and last message
     // First, get the conversations
     const { data: recentConversations, error: convError } = await supabaseAdmin
       .from('conversations')

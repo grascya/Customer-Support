@@ -1,4 +1,8 @@
 // scripts/seed-knowledge-base.ts
+
+// npx tsx --env-file=.env scripts/seed-knowledge-base.ts
+
+
 import { supabaseAdmin } from '../lib/supabase/server';
 import { generateEmbedding } from '../lib/utils/rag';
 import fs from 'fs';
@@ -88,7 +92,7 @@ async function seed() {
       }
     }
   }
-  console.log("✅ Seeding complete! Try running evals with 0.5 threshold now.");
+  console.log("✅ Seeding complete! Try running evals with 0.3 threshold now.");
 }
 
 seed();

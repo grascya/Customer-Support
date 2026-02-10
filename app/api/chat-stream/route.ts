@@ -1,32 +1,54 @@
 // app/api/chat-stream/route.ts
-
 import { NextRequest } from 'next/server';
 import { openai } from '@/lib/openrouter/client';
 import { retrieveRelevantDocs, formatContextForPrompt } from '@/lib/utils/rag';
 import { SYSTEM_PROMPT, RAG_PROMPT } from '@/lib/constants/prompts';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { analyzeSentiment } from '@/lib/utils/sentiment';
-import { shouldEscalateToHuman, escalateConversation } from '@/lib/utils/escalation'; // FIXED: Use escalation.ts instead of conversation.ts
+import { shouldEscalateToHuman, escalateConversation } from '@/lib/utils/escalation';
 
 export const runtime = 'nodejs';
 
 /**
- * Handles a POST request to process a message from a user.
- * 
- * @remarks
- * This function is responsible for the following steps:
- * 1. Get or create a conversation for the given session ID.
- * 2. Save the user message to the database.
- * 3. Analyze the sentiment of the message and update its metadata.
- * 4. Check if the conversation should be escalated to a human.
- * 5. Get the context from RAG.
- * 6. Request a streaming completion from OpenRouter.
- * 7. Return the response to the client as an event stream.
- * 
- * @param req - The NextRequest object containing the request body.
- * @returns A Response object containing the event stream response or an error response.
+ * Calculate the overall sentiment of a conversation.
+ * It will iterate through all user messages of a conversation and count the sentiment of each message.
+ * The overall sentiment will be determined by the majority of sentiment counts.
+ * If there is no majority, it will return 'neutral'.
+ * @param {string} conversationId - The ID of the conversation to calculate the sentiment for.
+ * @returns {Promise<'positive' | 'neutral' | 'negative'>} - A promise that resolves with the overall sentiment of the conversation.
  */
+async function calculateOverallSentiment(conversationId: string): Promise<'positive' | 'neutral' | 'negative'> {
+  const { data: allMessages } = await supabaseAdmin
+    .from('messages')
+    .select('metadata')
+    .eq('conversation_id', conversationId)
+    .eq('role', 'user')
+    .not('metadata', 'is', null);
+
+  if (!allMessages || allMessages.length === 0) return 'neutral';
+
+  const sentimentCounts = { positive: 0, neutral: 0, negative: 0 };
+  allMessages.forEach(msg => {
+    const sentiment = msg.metadata?.sentiment;
+    if (sentiment && sentiment in sentimentCounts) {
+      sentimentCounts[sentiment as keyof typeof sentimentCounts]++;
+    }
+  });
+
+  const total = sentimentCounts.positive + sentimentCounts.neutral + sentimentCounts.negative;
+  if (total === 0) return 'neutral';
+
+  const negativePercent = (sentimentCounts.negative / total) * 100;
+  const positivePercent = (sentimentCounts.positive / total) * 100;
+
+  if (negativePercent > 50) return 'negative';
+  if (positivePercent > 50) return 'positive';
+  return 'neutral';
+}
+
 export async function POST(req: NextRequest) {
+  const startTime = Date.now();
+  
   try {
     const { message, sessionId } = await req.json();
 
@@ -41,27 +63,31 @@ export async function POST(req: NextRequest) {
 
     // 1. Get or create conversation
     let conversation;
-    const { data: existingConv } = await supabaseAdmin
-      .from('conversations')
-      .select('*')
-      .eq('session_id', sessionId)
-      .eq('status', 'active')
-      .maybeSingle();
+    // Get existing ACTIVE conversation
+const { data: existingConv } = await supabaseAdmin
+  .from('conversations')
+  .select('*')
+  .eq('session_id', sessionId)
+  .eq('status', 'active') // ✅ Only get active ones!
+  .order('created_at', { ascending: false })
+  .limit(1)
+  .maybeSingle();
 
-    if (existingConv) {
-      conversation = existingConv;
-    } else {
-      const { data: newConv, error } = await supabaseAdmin
-        .from('conversations')
-        .insert({ session_id: sessionId, status: 'active' })
-        .select()
-        .single();
-      
-      if (error) throw error;
-      conversation = newConv;
-    }
+if (existingConv) {
+  conversation = existingConv;
+} else {
+  // Create new conversation
+  const { data: newConv, error } = await supabaseAdmin
+    .from('conversations')
+    .insert({ session_id: sessionId, status: 'active' })
+    .select()
+    .single();
+  
+  if (error) throw error;
+  conversation = newConv;
+}
 
-    // 2. Save user message to database
+    // 2. Save user message
     const { data: savedUserMessage } = await supabaseAdmin
       .from('messages')
       .insert({
@@ -72,49 +98,49 @@ export async function POST(req: NextRequest) {
       .select()
       .single();
 
-    // 3. Analyze sentiment and update message metadata
-    const sentiment = await analyzeSentiment(message);
-    await supabaseAdmin
+    // 3. PARALLEL OPERATIONS
+    const [sentiment, escalationResult, relevantDocs] = await Promise.all([
+      analyzeSentiment(message),
+      shouldEscalateToHuman(conversation.id, message),
+      retrieveRelevantDocs(message, 5, 0.3),
+    ]);
+
+    // 4. Update message metadata (async)
+    supabaseAdmin
       .from('messages')
       .update({ metadata: { sentiment } })
-      .eq('id', savedUserMessage?.id);
+      .eq('id', savedUserMessage?.id)
+      .then(() => console.log(`🔍 Sentiment: ${sentiment}`));
 
-    // FIXED: Update conversation-level sentiment so dashboard can display it
-    await supabaseAdmin
-      .from('conversations')
-      .update({ sentiment })
-      .eq('id', conversation.id);
+    // 5. Update overall sentiment (async)
+    calculateOverallSentiment(conversation.id).then(overallSentiment => {
+      supabaseAdmin
+        .from('conversations')
+        .update({ sentiment: overallSentiment })
+        .eq('id', conversation.id)
+        .then(() => console.log(`📊 Overall sentiment: ${overallSentiment}`));
+    });
 
-    console.log(`🔍 Sentiment for message: ${sentiment}`);
-
-    // 4. Check for escalation - FIXED: Now properly waits for async result
-    const escalationResult = await shouldEscalateToHuman(conversation.id, message);
+    // 6. Check escalation
     if (escalationResult.shouldEscalate) {
       await escalateConversation(conversation.id, escalationResult.reason!);
-      console.log(`🚨 Conversation ${conversation.id} escalated: ${escalationResult.reason} (confidence: ${escalationResult.confidence})`);
+      console.log(`🚨 Escalated: ${escalationResult.reason}`);
       
-      // Return escalation notice to frontend immediately
       return new Response(
         JSON.stringify({ 
           escalated: true, 
           reason: escalationResult.reason,
           message: "Your conversation has been escalated to a human agent. Someone will be with you shortly."
         }),
-        { 
-          status: 200, 
-          headers: { 'Content-Type': 'application/json' } 
-        }
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // 5. Get context from RAG
-    const relevantDocs = await retrieveRelevantDocs(message, 5, 0.3);
+    // 7. Format context
     const context = formatContextForPrompt(relevantDocs);
+    console.log(`📚 Retrieved ${relevantDocs.length} docs`);
 
-    console.log(`📚 Retrieved ${relevantDocs.length} relevant documents`);
-    console.log(`📄 Context length: ${context.length} chars`);
-
-    // 6. Request streaming completion from OpenRouter
+    // 8. Stream response - FIXED: Use Claude Sonnet (you have credits)
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -124,14 +150,14 @@ export async function POST(req: NextRequest) {
         "X-Title": "Lumino Support Chatbot"
       },
       body: JSON.stringify({
-        model: "anthropic/claude-3.5-sonnet",
+        model: "anthropic/claude-3.5-sonnet", // FIXED: Use Claude, not Gemini
         stream: true,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: RAG_PROMPT(context, message) }
         ],
         temperature: 0.3,
-        max_tokens: 400,
+        max_tokens: 300,
       })
     });
 
@@ -159,13 +185,13 @@ export async function POST(req: NextRequest) {
           while (true) {
             const { done, value } = await reader.read();
             if (done) {
-              // Save assistant message after streaming completes
               if (fullResponse) {
+                
                 const { data: savedMessage } = await supabaseAdmin
                   .from('messages')
                   .insert({
                     conversation_id: conversation.id,
-                    role: 'assistant',
+                    role: 'assistant', 
                     content: fullResponse,
                     metadata: {
                       sources: relevantDocs.map(d => ({
@@ -189,6 +215,9 @@ export async function POST(req: NextRequest) {
                   controller.enqueue(encoder.encode(metaEvent));
                 }
               }
+
+              const totalTime = Date.now() - startTime;
+              console.log(`⏱️ Response time: ${totalTime}ms`);
 
               controller.enqueue(encoder.encode('data: [DONE]\n\n'));
               controller.close();

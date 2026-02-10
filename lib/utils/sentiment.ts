@@ -4,38 +4,43 @@ import { openai } from '@/lib/openrouter/client';
 
 export type Sentiment = 'positive' | 'neutral' | 'negative';
 
-/**
- * Analyze sentiment of a message using LLM
- */
-export async function analyzeSentiment(message: string): Promise<Sentiment> {
+export async function analyzeSentiment(message: string, retries = 3): Promise<Sentiment> {
   try {
     console.log(`🔍 Analyzing sentiment for: "${message.substring(0, 50)}..."`);
     
     const response = await openai.chat.completions.create({
-      model: 'anthropic/claude-3.5-haiku', // Cheaper/faster for sentiment
+      model: 'anthropic/claude-3.5-haiku', 
       messages: [
         {
           role: 'system',
-          content: `Analyze the sentiment of the user's message. 
-          Respond with only one word: positive, neutral, or negative.
-          
-          Examples:
-          - "This is great, thank you!" → positive
-          - "How do I reset my hub?" → neutral
-          - "This is frustrating and doesn't work!" → negative
-          - "I've tried everything and nothing works" → negative
-          - "I need help" → neutral
-          - "This sucks" → negative
-          - "Perfect! Exactly what I needed" → positive
-          
-          Be strict: only mark as negative if there's clear frustration, anger, or dissatisfaction.`
+          content: `Analyze sentiment. Respond with ONE WORD only: positive, neutral, or negative
+
+POSITIVE (gratitude, satisfaction, appreciation):
+- "This is great, thank you!"
+- "I really appreciate this"
+- "Perfect!"
+- "Love it!"
+- "Thank you so much"
+
+NEUTRAL (questions, requests):
+- "How do I reset?"
+- "I need help"
+- "What are the specs?"
+
+NEGATIVE (frustration, disappointment, anger):
+- "This is frustrating"
+- "Doesn't work"
+- "I'm disappointed"
+- "This sucks"
+
+Gratitude and appreciation = POSITIVE, not neutral.`
         },
         {
           role: 'user',
           content: message
         }
       ],
-      temperature: 0.2,
+      temperature: 0.1,
       max_tokens: 10,
     });
 
@@ -44,38 +49,37 @@ export async function analyzeSentiment(message: string): Promise<Sentiment> {
     
     let sentiment: Sentiment;
     
-    if (rawSentiment === 'positive') {
+    if (rawSentiment?.includes('positive')) {
       sentiment = 'positive';
-    } else if (rawSentiment === 'negative') {
+    } else if (rawSentiment?.includes('negative')) {
       sentiment = 'negative';
     } else {
-      sentiment = 'neutral'; // Default for anything else including 'neutral'
+      sentiment = 'neutral';
     }
     
     console.log(`✅ Final sentiment: ${sentiment}`);
     return sentiment;
     
   } catch (error: any) {
+    if (error.message?.includes('429') && retries > 0) {
+      const delay = (4 - retries) * 1000;
+      console.log(`⏳ Retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return analyzeSentiment(message, retries - 1);
+    }
+    
     console.error('❌ Error analyzing sentiment:', error.message);
-    return 'neutral'; // Safe default on error
+    return 'neutral';
   }
 }
 
-/**
- * Check if recent conversation sentiment indicates user frustration
- */
 export function isUserFrustrated(recentSentiments: Sentiment[]): boolean {
+  // Only escalate if the user has been negative for the last 2+ messages
   if (recentSentiments.length < 2) return false;
   
-  // If last 2-3 messages are negative, user is frustrated
   const lastThree = recentSentiments.slice(-3);
   const negativeCount = lastThree.filter(s => s === 'negative').length;
   
-  const isFrustrated = negativeCount >= 2;
-  
-  if (isFrustrated) {
-    console.log(`🚨 User frustration detected: ${negativeCount}/3 recent messages are negative`);
-  }
-  
-  return isFrustrated;
+  // Require at least 2 negative sentiments in the last 3 messages
+  return negativeCount >= 2; 
 }

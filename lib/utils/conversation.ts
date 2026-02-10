@@ -11,10 +11,19 @@ export async function shouldEscalateToHuman(
   message: string
 ): Promise<{ shouldEscalate: boolean; reason?: string }> {
   const lower = message.toLowerCase();
-  const escalationKeywords = ['refund', 'angry', 'bad', 'frustrated', 'not happy', 'problem'];
+  
+  // Only trigger on "angry" keywords or explicit demands
+  const urgentKeywords = [
+    'refund', 'lawsuit', 'legal', 'scam', 
+    'talk to a manager', 'human representative', 'speak to a person'
+  ];
 
-  const shouldEscalate = escalationKeywords.some(k => lower.includes(k));
-  if (shouldEscalate) return { shouldEscalate: true, reason: 'Negative sentiment / escalation keyword detected' };
+  const shouldEscalate = urgentKeywords.some(k => lower.includes(k));
+  
+  if (shouldEscalate) {
+    return { shouldEscalate: true, reason: 'Urgent keyword or human agent request detected' };
+  }
+  
   return { shouldEscalate: false };
 }
 
