@@ -46,6 +46,20 @@ async function calculateOverallSentiment(conversationId: string): Promise<'posit
   return 'neutral';
 }
 
+/**
+ * Handles POST requests to /api/chat-stream.
+ * This endpoint is responsible for:
+ * 1. Getting or creating a conversation.
+ * 2. Saving the user message.
+ * 3. Performing parallel operations to analyze the sentiment of the message, check if the conversation should be escalated, and retrieve relevant documents.
+ * 4. Updating the message metadata (async).
+ * 5. Updating the overall sentiment (async).
+ * 6. Checking escalation.
+ * 7. Formatting the context.
+ * 8. Streaming the response using OpenRouter (fixed to use Claude Sonnet).
+ * @param {NextRequest} req - The request object.
+ * @returns {NextResponse} - The response object.
+ */
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
   
